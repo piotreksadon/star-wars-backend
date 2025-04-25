@@ -1,0 +1,176 @@
+{
+  "namespaces": [
+    "starwars"
+  ],
+  "name": "starwars",
+  "tables": [
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "planet": {
+          "name": "planet",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "characters",
+      "schema": "starwars",
+      "indexes": [
+        {
+          "keyName": "characters_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": false,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        }
+      },
+      "name": "episode",
+      "schema": "starwars",
+      "indexes": [
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "episode_name_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "episode_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "character_id": {
+          "name": "character_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "episode_id": {
+          "name": "episode_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        }
+      },
+      "name": "characters_episodes",
+      "schema": "starwars",
+      "indexes": [
+        {
+          "keyName": "characters_episodes_pkey",
+          "columnNames": [
+            "character_id",
+            "episode_id"
+          ],
+          "composite": true,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "characters_episodes_character_id_foreign": {
+          "constraintName": "characters_episodes_character_id_foreign",
+          "columnNames": [
+            "character_id"
+          ],
+          "localTableName": "starwars.characters_episodes",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "starwars.characters",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "characters_episodes_episode_id_foreign": {
+          "constraintName": "characters_episodes_episode_id_foreign",
+          "columnNames": [
+            "episode_id"
+          ],
+          "localTableName": "starwars.characters_episodes",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "starwars.episode",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    }
+  ],
+  "nativeEnums": {}
+}
