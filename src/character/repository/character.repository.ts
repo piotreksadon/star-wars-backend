@@ -1,16 +1,31 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { Character } from '../entity/character.entity';
-import {ICharacterRepository} from "./character-repository.interface";
-import {Episode} from "../../episode/entity/episode.entity";
+import { ICharacterRepository } from "./character-repository.port";
+import { PaginationMetadata } from "../../shared/interfaces/pagination.interface";
+
+export interface CharacterQueryConditions {
+    id?: number;
+    name?: string;
+    planet?: string;
+}
+
+export interface CharactersPaginatedResult<T> {
+    characters: T[];
+    metadata: PaginationMetadata;
+}
 
 @Injectable()
-export class CharacterRepository implements ICharacterRepository {
+export class CharacterRepository extends ICharacterRepository {
     constructor(
         private readonly em: EntityManager,
-    ) {}
+    ) {
+        super()
+    }
 
-    async findAndPaginate(page: number, limit: number) {
+    //I was thinking of extracting this method to some BaseRepository class to use it in different modules if needed,
+    //but passed on this idea not to overcomplicate this simple app.
+    async findAndPaginate(page: number, limit: number): Promise<CharactersPaginatedResult<Character>> {
         const count = await this.em.count(Character, {});
         const totalPages = Math.ceil(count / limit);
 
@@ -36,6 +51,9 @@ export class CharacterRepository implements ICharacterRepository {
             offset
         });
 
+
+        //I decided to make pagination a bit more complicated and add detailed metadata in response to achieve
+        // easier frontend development.
         return {
             characters: result,
             metadata: {
@@ -49,8 +67,8 @@ export class CharacterRepository implements ICharacterRepository {
         };
     }
 
-    async findById(id: number): Promise<Character | null> {
-        return this.em.findOne(Character, { id }, { populate: ['episodes'] });
+    async findOneBy(conditions: CharacterQueryConditions): Promise<Character | null> {
+        return this.em.findOne(Character, conditions, {populate: ['episodes']});
     }
 
     async create(char: Character): Promise<Character> {
@@ -70,11 +88,5 @@ export class CharacterRepository implements ICharacterRepository {
 
     async delete(character: Character): Promise<void> {
         await this.em.removeAndFlush(character);
-    }
-
-    private getPage(totalRecords: number, page: number, limit: number): number {
-        if (!totalRecords) return 0;
-        const totalPages = Math.ceil(totalRecords / limit);
-        return Math.max(1, Math.min(page, totalPages));
     }
 }

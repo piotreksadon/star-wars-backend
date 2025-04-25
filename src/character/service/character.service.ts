@@ -2,18 +2,15 @@ import {Inject, Injectable, NotFoundException} from '@nestjs/common';
 import { CreateCharacterDto } from '../dto/create-character.dto';
 import { UpdateCharacterDto } from '../dto/update-character.dto';
 import { Character } from '../entity/character.entity';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import {Collection, EntityRepository} from '@mikro-orm/core';
-import {ICharacterRepository} from "../repository/character-repository.interface";
-import {Episode} from "../../episode/entity/episode.entity";
-import {CharacterRepository} from "../repository/character.repository";
-import {EpisodeService} from "../../episode/service/episode.service";
+import { ICharacterRepository } from "../repository/character-repository.port";
+import { EpisodeService } from "../../episode/service/episode.service";
+import {CharactersPaginatedResult} from "../repository/character.repository";
 
 @Injectable()
 export class CharacterService {
     constructor(
         @Inject()
-        private readonly characterRepo: CharacterRepository,
+        private readonly characterRepo: ICharacterRepository,
         @Inject()
         private readonly episodeService: EpisodeService,
     ) {}
@@ -32,18 +29,18 @@ export class CharacterService {
         return this.characterRepo.create(character);
     }
 
-    async findAndPaginate(offset = 0, limit = 10) {
+    async findAndPaginate(offset = 0, limit = 10):Promise<CharactersPaginatedResult<Character>> {
         return this.characterRepo.findAndPaginate(offset, limit);
     }
 
-    async findById(id: number): Promise<Character> {
-        const character = await this.characterRepo.findById(id);
+    async findOne(id: number): Promise<Character> {
+        const character = await this.characterRepo.findOneBy({id});
         if (!character) throw new NotFoundException('Character not found');
         return character;
     }
 
     async update(id: number, dto: UpdateCharacterDto): Promise<Character> {
-        const character = await this.characterRepo.findById(id);
+        const character = await this.characterRepo.findOneBy({id});
         if (!character) throw new NotFoundException('Character not found');
 
         if (dto.name) character.name = dto.name;
@@ -59,7 +56,7 @@ export class CharacterService {
     }
 
     async remove(id: number): Promise<void> {
-        const character = await this.characterRepo.findById(id);
+        const character = await this.characterRepo.findOneBy({id});
 
         if (!character) {
             throw new NotFoundException()

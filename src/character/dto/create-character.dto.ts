@@ -1,6 +1,5 @@
 import { IsArray, IsOptional, IsString } from 'class-validator';
 import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
-import {Optional} from "@nestjs/common";
 
 export class CreateCharacterDto {
     @IsString()

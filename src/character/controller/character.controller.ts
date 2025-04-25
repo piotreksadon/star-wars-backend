@@ -5,7 +5,6 @@ import {
     Body,
     Param,
     Delete,
-    Put,
     Query,
     ParseIntPipe, Patch,
 } from '@nestjs/common';
@@ -48,7 +47,7 @@ export class CharacterController {
     @Get(':id')
     @ApiOperation({ summary: 'Get a character by id' })
     async findOne(@Param('id', ParseIntPipe) id: number): Promise<CharacterDto> {
-        const character = await this.characterService.findById(id);
+        const character = await this.characterService.findOne(id);
 
         return {
             name: character.name,
